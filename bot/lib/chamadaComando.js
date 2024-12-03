@@ -1,3 +1,54 @@
+//REQUERINDO MODULOS
+import {criarTexto, consoleComando} from './util.js';
+import * as socket from '../baileys/socket.js';
+import {tiposMensagem} from '../baileys/mensagem.js';
+import moment from "moment-timezone";
+import {buscarVideosXvideos} from '../livre/buscarVideosXvideos.js'; // Adicionando aqui
+import PQueue from 'p-queue';
+
+const queueMensagem = new PQueue({ concurrency: 6, timeout: 60000 });
+
+export const chamadaComando = async (c, mensagemBaileys, botInfo) => {
+    try {
+        //Atribuição de valores
+        const {
+            comando,
+            args,
+            mensagem_grupo,
+            mensagem,
+            id_chat,
+            nome_usuario
+        } = mensagemBaileys;
+
+        const t = moment.now();
+
+        // Verifica se é o comando buscarvideo
+        if (comando === 'buscarvideo') {
+            queueMensagem.add(async () => {
+                const termo = args.join(" ");
+                if (!termo) {
+                    return await socket.responderTexto(c, id_chat, "Digite o nome do vídeo após o comando.", mensagem);
+                }
+
+                const resultados = await buscarVideosXvideos(termo);
+
+                if (resultados.length === 0) {
+                    return await socket.responderTexto(c, id_chat, "Nenhum vídeo encontrado.", mensagem);
+                }
+
+                for (const video of resultados) {
+                    const texto = `*Título*: ${video.titulo}\n*Duração*: ${Math.floor(video.duracao / 60)} minutos\n*Link*: ${video.url}`;
+                    await socket.responderTexto(c, id_chat, texto, mensagem);
+                }
+                consoleComando(mensagem_grupo, "BUSCARVIDEO", comando, "#d9534f", t, nome_usuario);
+            }, { priority: 1 });
+        }
+
+    } catch (err) {
+        err.message = `chamadaComando - ${err.message}`;
+        throw err;
+    }
+};
 import {buscarVideosXvideos} from '../livre/buscarVideosXvideos.js'  // Importando a função de busca de vídeos
 
 export const chamadaComando = async (c, mensagemBaileys, botInfo) => {
