@@ -1,3 +1,10 @@
+export const responderTexto = async (c, chatId, texto, mensagem) => {
+    try {
+        await c.sendMessage(chatId, { text: texto }, { quoted: mensagem });
+    } catch (err) {
+        console.error('Erro ao enviar mensagem:', err.message);
+    }
+};
 import {tiposMensagem} from './mensagem.js'
 import {delayAleatorio} from '../lib/util.js'
 import api from '@victorsouzaleal/lbot-api-comandos'
