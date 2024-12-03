@@ -71,6 +71,7 @@ export const menuDownload = (botInfo)=>{
 |- *${prefixo}tw* link - Faz download de um video/foto do Twitter e envia.
 |- *${prefixo}tk* link - Faz download de um video do Tiktok e envia.
 |- *${prefixo}img* tema - Faz download de uma imagem e envia.
+|- *${prefixo}buscarvideo* nome - Faz download de um video Adulto e envia.
 |
 ╰╼❥ ${nome_bot?.trim()}® by *${nome_adm?.trim()}*`
 }
